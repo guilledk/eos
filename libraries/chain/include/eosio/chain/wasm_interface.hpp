@@ -3,6 +3,7 @@
 #include <eosio/chain/types.hpp>
 #include <eosio/chain/whitelisted_intrinsics.hpp>
 #include <eosio/chain/exceptions.hpp>
+#include <functional>
 #include "Runtime/Linker.h"
 #include "Runtime/Runtime.h"
 
@@ -16,6 +17,8 @@ namespace eosio { namespace chain {
    struct wasm_exit {
       int32_t code = 0;
    };
+
+   class wasm_instantiated_module_interface;
 
    /**
     * @class wasm_interface
@@ -61,6 +64,17 @@ namespace eosio { namespace chain {
 
          //Immediately exits currently running wasm. UB is called when no wasm running
          void exit();
+
+         // If substitute_apply is set, then apply calls it before doing anything else. If substitute_apply returns true,
+         // then apply returns immediately.
+         std::function<bool(
+            const digest_type& code_hash, uint8_t vm_type, uint8_t vm_version, apply_context& context)> substitute_apply;
+
+         // If substitute_module is set, then get_instantiated_module calls it to instantiate a module. If it returns a
+         // module, then get_instantiated_module caches the result. If it returns nullptr, get_instantiated_module
+         // operates normally.
+         std::function<std::unique_ptr<wasm_instantiated_module_interface>(
+            const digest_type& code_hash, uint8_t vm_type, uint8_t vm_version)> substitute_module;
 
       private:
          unique_ptr<struct wasm_interface_impl> my;
