@@ -101,7 +101,7 @@ namespace eosio { namespace chain {
          }
       }
 #endif
-      my->get_instantiated_module(*this, code_hash, vm_type, vm_version, context.trx_context)->apply(context);
+      my->get_instantiated_module(code_hash, vm_type, vm_version, context.trx_context)->apply(context);
    }
 
    void wasm_interface::exit() {

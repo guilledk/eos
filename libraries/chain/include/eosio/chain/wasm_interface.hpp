@@ -18,8 +18,6 @@ namespace eosio { namespace chain {
       int32_t code = 0;
    };
 
-   class wasm_instantiated_module_interface;
-
    /**
     * @class wasm_interface
     *
@@ -69,13 +67,6 @@ namespace eosio { namespace chain {
          // then apply returns immediately.
          std::function<bool(
             const digest_type& code_hash, uint8_t vm_type, uint8_t vm_version, apply_context& context)> substitute_apply;
-
-         // If substitute_module is set, then get_instantiated_module calls it to instantiate a module. If it returns a
-         // module, then get_instantiated_module caches the result. If it returns nullptr, get_instantiated_module
-         // operates normally.
-         std::function<std::unique_ptr<wasm_instantiated_module_interface>(
-            const digest_type& code_hash, uint8_t vm_type, uint8_t vm_version)> substitute_module;
-
       private:
          unique_ptr<struct wasm_interface_impl> my;
    };
