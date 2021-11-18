@@ -2837,6 +2837,10 @@ const vector<transaction_receipt>& controller::get_pending_trx_receipts()const {
    return my->pending->get_trx_receipts();
 }
 
+const controller::config& controller::get_config() const {
+   return my->conf;
+}
+
 uint32_t controller::last_irreversible_block_num() const {
    return my->fork_db.root()->block_num;
 }

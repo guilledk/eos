@@ -222,6 +222,7 @@ namespace eosio { namespace chain {
          optional<block_id_type>        pending_producer_block_id()const;
 
          const vector<transaction_receipt>& get_pending_trx_receipts()const;
+         const config&                      get_config()const;
 
          const producer_authority_schedule&    active_producers()const;
          const producer_authority_schedule&    pending_producers()const;
