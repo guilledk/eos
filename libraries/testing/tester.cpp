@@ -189,6 +189,10 @@ namespace eosio { namespace testing {
       open(std::move(pfs), default_genesis().compute_chain_id());
    }
 
+   void base_tester::init(controller* node) {
+       spectate(node);
+   }
+
    void base_tester::execute_setup_policy(const setup_policy policy) {
       const auto& pfm = control->get_protocol_feature_manager();
 
@@ -275,6 +279,10 @@ namespace eosio { namespace testing {
               }
           }
       });
+   }
+
+   void base_tester::spectate( controller* node ) {
+       control.reset(node);
    }
 
    void base_tester::open( protocol_feature_set&& pfs, const snapshot_reader_ptr& snapshot ) {

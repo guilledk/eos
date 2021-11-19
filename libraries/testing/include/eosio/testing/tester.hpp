@@ -159,6 +159,7 @@ namespace eosio { namespace testing {
          void              init(controller::config config, protocol_feature_set&& pfs, const snapshot_reader_ptr& snapshot);
          void              init(controller::config config, protocol_feature_set&& pfs, const genesis_state& genesis);
          void              init(controller::config config, protocol_feature_set&& pfs);
+         void              init(controller* node);
          void              execute_setup_policy(const setup_policy policy);
 
          void              close();
@@ -170,6 +171,7 @@ namespace eosio { namespace testing {
          void              open( const snapshot_reader_ptr& snapshot );
          void              open( const genesis_state& genesis );
          void              open( fc::optional<chain_id_type> expected_chain_id = {} );
+         void              spectate( controller* node );
          bool              is_same_chain( base_tester& other );
 
          virtual signed_block_ptr produce_block( fc::microseconds skip_time = fc::milliseconds(config::block_interval_ms) ) = 0;
@@ -474,6 +476,10 @@ namespace eosio { namespace testing {
          else {
             init(cfg);
          }
+      }
+
+      tester(controller* node) {
+          init(node);
       }
 
       template <typename Lambda>
