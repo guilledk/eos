@@ -27,6 +27,8 @@ else()
   set(nodeos_BUILD_VERSION 0)
 endif()
 
+find_package(Boost 1.67 REQUIRED COMPONENTS unit_test_framework)
+
 configure_file(config.hpp.in config.hpp ESCAPE_QUOTES)
 
 target_include_directories(${NODE_EXECUTABLE_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
@@ -65,6 +67,7 @@ target_link_libraries( ${NODE_EXECUTABLE_NAME}
         PRIVATE -Wl,${whole_archive_flag} test_control_api_plugin    -Wl,${no_whole_archive_flag}
         PRIVATE -Wl,${whole_archive_flag} testing_plugin             -Wl,${no_whole_archive_flag}
         PRIVATE -Wl,${build_id_flag}
+        PRIVATE Boost::unit_test_framework
         PRIVATE chain_plugin http_plugin producer_plugin http_client_plugin
         PRIVATE eosio_chain fc ${CMAKE_DL_LIBS} ${PLATFORM_SPECIFIC_LIBS} )
 
