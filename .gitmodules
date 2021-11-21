@@ -28,3 +28,6 @@
 [submodule "libraries/appbase"]
 	path = libraries/appbase
 	url = https://github.com/eosio/appbase
+[submodule "libraries/testing/pybind11"]
+	path = libraries/pytest-eosio/pybind11
+	url = https://github.com/pybind/pybind11
