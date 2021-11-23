@@ -3,6 +3,7 @@ cmake_minimum_required( VERSION 3.8 )
 project( EOSIO )
 include(CTest) # suppresses DartConfiguration.tcl error
 enable_testing()
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
    message(WARNING "CMAKE_INSTALL_PREFIX is set to /usr/local. This is not recommended.")
@@ -100,7 +101,7 @@ else()
 endif()
 
 set(Boost_USE_MULTITHREADED      ON)
-set( Boost_USE_STATIC_LIBS ON CACHE STRING "ON or OFF" )
+set( Boost_USE_STATIC_LIBS OFF CACHE STRING "ON or OFF" )
 # Most boost deps get implictly picked up via fc, as just about everything links to fc. In addition we pick up
 # the pthread dependency through fc.
 find_package(Boost 1.67 REQUIRED COMPONENTS program_options unit_test_framework)
@@ -174,93 +175,86 @@ if( GPERFTOOLS_FOUND )
 endif()
 
 add_subdirectory( libraries )
-add_subdirectory( plugins )
-add_subdirectory( programs )
-add_subdirectory( scripts )
-add_subdirectory( unittests )
-add_subdirectory( contracts )
-add_subdirectory( tests )
-add_subdirectory( tools )
 
-option(DISABLE_WASM_SPEC_TESTS "disable building of wasm spec unit tests" OFF)
-
-if (NOT DISABLE_WASM_SPEC_TESTS)
-add_subdirectory( eosio-wasm-spec-tests/generated-tests )
-endif()
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
-
-install_directory_permissions(DIRECTORY ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio)
-
-install(FILES testnet.template DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/launcher)
-install_directory_permissions(DIRECTORY ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio)
-install_directory_permissions(DIRECTORY ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/launcher)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testnet.template ${CMAKE_CURRENT_BINARY_DIR}/etc/eosio/launcher/testnet.template COPYONLY)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.bios/eosio.bios.abi DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.bios/eosio.bios.wasm DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.boot/eosio.boot.abi DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.boot/eosio.boot.wasm DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.in ${CMAKE_CURRENT_BINARY_DIR}/version.hpp)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version.hpp DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/eosio)
-
-set(EOS_ROOT_DIR ${CMAKE_BINARY_DIR})
-configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/eosio-config.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/eosio/eosio-config.cmake @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/EosioTesterBuild.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/eosio/EosioTester.cmake @ONLY)
-
-set(EOS_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
-configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/eosio-config.cmake.in ${CMAKE_BINARY_DIR}/modules/eosio-config.cmake @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/modules/eosio-config.cmake DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/eosio)
-configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/EosioTester.cmake.in ${CMAKE_BINARY_DIR}/modules/EosioTester.cmake @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/modules/EosioTester.cmake DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/eosio)
-
-configure_file(${CMAKE_SOURCE_DIR}/LICENSE
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/softfloat/COPYING.txt
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.softfloat COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/wasm-jit/LICENSE
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.wavm COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/fc/secp256k1/upstream/COPYING
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.secp256k1 COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/fc/include/fc/crypto/webauthn_json/license.txt
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.rapidjson COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/fc/src/network/LICENSE.go
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.go COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/yubihsm/LICENSE
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.yubihsm COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/eos-vm/LICENSE
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.eos-vm COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/rocksdb/LICENSE.Apache
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.rocksdb COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/rocksdb/LICENSE.leveldb
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.leveldb COPYONLY)
-configure_file(${CMAKE_SOURCE_DIR}/libraries/amqp-cpp/LICENSE
-               ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.amqpcpp COPYONLY)
-file(DOWNLOAD https://raw.githubusercontent.com/jtv/libpqxx/master/COPYING 
-     ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.libpqxx)
-
-install(FILES LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ COMPONENT base)
-install(FILES libraries/softfloat/COPYING.txt DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.softfloat COMPONENT base)
-install(FILES libraries/wasm-jit/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.wavm COMPONENT base)
-install(FILES libraries/fc/secp256k1/upstream/COPYING DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.secp256k1 COMPONENT base)
-install(FILES libraries/fc/include/fc/crypto/webauthn_json/license.txt DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.rapidjson COMPONENT base)
-install(FILES libraries/fc/src/network/LICENSE.go DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ COMPONENT base)
-install(FILES libraries/yubihsm/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.yubihsm COMPONENT base)
-install(FILES libraries/eos-vm/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.eos-vm COMPONENT base)
-install(FILES libraries/rocksdb/LICENSE.Apache DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.rocksdb COMPONENT base)
-install(FILES libraries/rocksdb/LICENSE.leveldb DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.leveldb COMPONENT base)
-install(FILES libraries/amqp-cpp/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.amqpcpp COMPONENT base)
-install(FILES ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.libpqxx DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ COMPONENT base)
-
-add_custom_target(base-install
-  COMMAND "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}"
-  COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=base -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
-  USES_TERMINAL
-)
-
-get_property(_CTEST_CUSTOM_TESTS_IGNORE GLOBAL PROPERTY CTEST_CUSTOM_TESTS_IGNORE)
-file(WRITE "${CMAKE_BINARY_DIR}/CTestCustom.cmake" "SET(CTEST_CUSTOM_TESTS_IGNORE ${_CTEST_CUSTOM_TESTS_IGNORE})")
-
-include(package)
-include(doxygen)
+# option(DISABLE_WASM_SPEC_TESTS "disable building of wasm spec unit tests" OFF)
+# 
+# if (NOT DISABLE_WASM_SPEC_TESTS)
+# add_subdirectory( eosio-wasm-spec-tests/generated-tests )
+# endif()
+# 
+# set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
+# 
+# install_directory_permissions(DIRECTORY ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio)
+# 
+# install(FILES testnet.template DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/launcher)
+# install_directory_permissions(DIRECTORY ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio)
+# install_directory_permissions(DIRECTORY ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/launcher)
+# configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testnet.template ${CMAKE_CURRENT_BINARY_DIR}/etc/eosio/launcher/testnet.template COPYONLY)
+# 
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.bios/eosio.bios.abi DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.bios/eosio.bios.wasm DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.boot/eosio.boot.abi DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/contracts/contracts/eosio.boot/eosio.boot.wasm DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/eosio/contracts)
+# 
+# configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.in ${CMAKE_CURRENT_BINARY_DIR}/version.hpp)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version.hpp DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/eosio)
+# 
+# set(EOS_ROOT_DIR ${CMAKE_BINARY_DIR})
+# configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/eosio-config.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/eosio/eosio-config.cmake @ONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/EosioTesterBuild.cmake.in ${CMAKE_BINARY_DIR}/lib/cmake/eosio/EosioTester.cmake @ONLY)
+# 
+# set(EOS_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
+# configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/eosio-config.cmake.in ${CMAKE_BINARY_DIR}/modules/eosio-config.cmake @ONLY)
+# install(FILES ${CMAKE_BINARY_DIR}/modules/eosio-config.cmake DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/eosio)
+# configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/EosioTester.cmake.in ${CMAKE_BINARY_DIR}/modules/EosioTester.cmake @ONLY)
+# install(FILES ${CMAKE_BINARY_DIR}/modules/EosioTester.cmake DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/eosio)
+# 
+# configure_file(${CMAKE_SOURCE_DIR}/LICENSE
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/softfloat/COPYING.txt
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.softfloat COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/wasm-jit/LICENSE
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.wavm COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/fc/secp256k1/upstream/COPYING
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.secp256k1 COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/fc/include/fc/crypto/webauthn_json/license.txt
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.rapidjson COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/fc/src/network/LICENSE.go
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.go COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/yubihsm/LICENSE
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.yubihsm COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/eos-vm/LICENSE
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.eos-vm COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/rocksdb/LICENSE.Apache
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.rocksdb COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/rocksdb/LICENSE.leveldb
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.leveldb COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/libraries/amqp-cpp/LICENSE
+#                ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.amqpcpp COPYONLY)
+# file(DOWNLOAD https://raw.githubusercontent.com/jtv/libpqxx/master/COPYING 
+#      ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.libpqxx)
+# 
+# install(FILES LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ COMPONENT base)
+# install(FILES libraries/softfloat/COPYING.txt DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.softfloat COMPONENT base)
+# install(FILES libraries/wasm-jit/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.wavm COMPONENT base)
+# install(FILES libraries/fc/secp256k1/upstream/COPYING DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.secp256k1 COMPONENT base)
+# install(FILES libraries/fc/include/fc/crypto/webauthn_json/license.txt DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.rapidjson COMPONENT base)
+# install(FILES libraries/fc/src/network/LICENSE.go DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ COMPONENT base)
+# install(FILES libraries/yubihsm/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.yubihsm COMPONENT base)
+# install(FILES libraries/eos-vm/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.eos-vm COMPONENT base)
+# install(FILES libraries/rocksdb/LICENSE.Apache DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.rocksdb COMPONENT base)
+# install(FILES libraries/rocksdb/LICENSE.leveldb DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.leveldb COMPONENT base)
+# install(FILES libraries/amqp-cpp/LICENSE DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ RENAME LICENSE.amqpcpp COMPONENT base)
+# install(FILES ${CMAKE_BINARY_DIR}/licenses/eosio/LICENSE.libpqxx DESTINATION ${CMAKE_INSTALL_FULL_DATAROOTDIR}/licenses/eosio/ COMPONENT base)
+# 
+# add_custom_target(base-install
+#   COMMAND "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}"
+#   COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=base -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
+#   USES_TERMINAL
+# )
+# 
+# get_property(_CTEST_CUSTOM_TESTS_IGNORE GLOBAL PROPERTY CTEST_CUSTOM_TESTS_IGNORE)
+# file(WRITE "${CMAKE_BINARY_DIR}/CTestCustom.cmake" "SET(CTEST_CUSTOM_TESTS_IGNORE ${_CTEST_CUSTOM_TESTS_IGNORE})")
+# 
+# include(package)
+# include(doxygen)

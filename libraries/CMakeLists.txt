@@ -13,6 +13,8 @@ if(APPLE)
   set(USE_RTTI ON)
 endif()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory( fc )
 add_subdirectory( builtins )
 add_subdirectory( softfloat )
@@ -20,7 +22,6 @@ add_subdirectory( chainbase )
 add_subdirectory( wasm-jit )
 add_subdirectory( appbase )
 add_subdirectory( chain )
-add_subdirectory( testing )
 add_subdirectory( version )
 add_subdirectory( state_history )
 add_subdirectory( abieos )
@@ -38,21 +39,9 @@ if(eos-vm IN_LIST EOSIO_WASM_RUNTIMES OR eos-vm-jit IN_LIST EOSIO_WASM_RUNTIMES)
 add_subdirectory( eos-vm )
 endif()
 
-set(ENABLE_STATIC ON)
+set(ENABLE_STATIC OFF)
 set(CMAKE_MACOSX_RPATH OFF)
 set(BUILD_ONLY_LIB ON CACHE BOOL "Library only build")
-message(STATUS "Starting yubihsm configuration...")
-add_subdirectory( yubihsm EXCLUDE_FROM_ALL )
-target_compile_options(yubihsm_static PRIVATE -fno-lto -fcommon)
-message(STATUS "yubihsm configuration complete")
 
-get_property(_CTEST_CUSTOM_TESTS_IGNORE GLOBAL PROPERTY CTEST_CUSTOM_TESTS_IGNORE)
-set_property(GLOBAL PROPERTY CTEST_CUSTOM_TESTS_IGNORE
-  "change_authkey import_ed decrypt_ec decrypt_rsa ssh logs generate_rsa import_ec echo\
-  yubico_otp wrap_data wrap info import_rsa import_authkey generate_hmac generate_ec\
-  attest pbkdf2 parsing ${_CTEST_CUSTOM_TESTS_IGNORE}")
+add_subdirectory( testing )
 
-find_package(OpenSSL REQUIRED)
-option(AMQP-CPP_LINUX_TCP CACHE ON)
-add_subdirectory( amqp-cpp EXCLUDE_FROM_ALL )
-target_include_directories(amqpcpp PRIVATE "${OPENSSL_INCLUDE_DIR}")

@@ -31,3 +31,4 @@ install( TARGETS eosio_testing
 )
 install_directory_permissions( DIRECTORY ${CMAKE_INSTALL_FULL_INCLUDEDIR}/eosio/testing )
 
+add_subdirectory(bindings)
