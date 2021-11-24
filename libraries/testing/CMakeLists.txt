@@ -16,6 +16,7 @@ target_include_directories( eosio_testing
                             PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include"
                                    "${CMAKE_CURRENT_SOURCE_DIR}/../wasm-jit/Include"
                                    "${CMAKE_BINARY_DIR}/unittests/include"
+                                   "${CMAKE_CURRENT_SOURCE_DIR}/../../unittests/include"
                             )
 
 if(MSVC)

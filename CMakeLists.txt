@@ -174,14 +174,16 @@ if( GPERFTOOLS_FOUND )
     set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${GPERFTOOLS_TCMALLOC}")
 endif()
 
+add_subdirectory( external )
+
 add_subdirectory( libraries )
 add_subdirectory( plugins )
 add_subdirectory( programs )
 add_subdirectory( scripts )
 add_subdirectory( unittests )
 add_subdirectory( contracts )
-add_subdirectory( tests )
-add_subdirectory( tools )
+# add_subdirectory( tests )
+# add_subdirectory( tools )
 
 option(DISABLE_WASM_SPEC_TESTS "disable building of wasm spec unit tests" OFF)
 

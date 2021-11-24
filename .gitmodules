@@ -6,13 +6,10 @@
 	url = https://github.com/Yubico/yubihsm-shell
 [submodule "libraries/eos-vm"]
 	path = libraries/eos-vm
-	url = https://github.com/eosio/eos-vm
+	url = https://github.com/guilledk/eos-vm
 [submodule "eosio-wasm-spec-tests"]
 	path = eosio-wasm-spec-tests
 	url = https://github.com/EOSIO/eosio-wasm-spec-tests
-[submodule "libraries/abieos"]
-	path = libraries/abieos
-	url = https://github.com/EOSIO/abieos.git
 [submodule "libraries/rocksdb"]
 	path = libraries/rocksdb
 	url = https://github.com/facebook/rocksdb.git
@@ -28,3 +25,6 @@
 [submodule "libraries/appbase"]
 	path = libraries/appbase
 	url = https://github.com/eosio/appbase
+[submodule "external/rapidjson"]
+	path = external/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

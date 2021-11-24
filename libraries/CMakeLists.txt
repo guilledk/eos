@@ -27,6 +27,7 @@ add_subdirectory( abieos )
 add_subdirectory( rocksdb )
 add_subdirectory( chain_kv )
 add_subdirectory( se-helpers )
+add_subdirectory( debug_eos_vm )
 
 set(USE_EXISTING_SOFTFLOAT ON CACHE BOOL "use pre-exisiting softfloat lib")
 set(ENABLE_TOOLS OFF CACHE BOOL "Build tools")
