@@ -138,7 +138,7 @@ namespace debug_eos_vm
    template <>                                                                                    \
    template <>                                                                                    \
    void eosio::vm::binary_parser<                                                                 \
-       eosio::vm::machine_code_writer<eosio::vm::jit_execution_context<Host, true>>, Options,     \
+       eosio::vm::machine_code_writer<eosio::vm::jit_execution_context<Host>>, Options,           \
        debug_eos_vm::debug_instr_map>::                                                           \
        parse_section<eosio::vm::section_id::code_section>(                                        \
            eosio::vm::wasm_code_ptr & code,                                                       \
@@ -151,7 +151,7 @@ namespace debug_eos_vm
                              std::size_t idx) { parse_function_body(code, fb, idx); });           \
       EOS_VM_ASSERT(elems.size() == _mod->functions.size(), eosio::vm::wasm_parse_exception,      \
                     "code section must have the same size as the function section");              \
-      eosio::vm::machine_code_writer<eosio::vm::jit_execution_context<Host, true>> code_writer(   \
+      eosio::vm::machine_code_writer<eosio::vm::jit_execution_context<Host>> code_writer(   \
           _allocator, code.bounds() - code.offset(), *_mod);                                      \
       imap.on_code_start(code_writer.get_base_addr(), code_start);                                \
       for (size_t i = 0; i < _function_bodies.size(); i++)                                        \

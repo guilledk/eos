@@ -36,11 +36,13 @@ RUN apt-get update && apt-get install -y \
     libboost-all-dev \
     libcurl4-gnutls-dev
 
-RUN echo v12
-
 WORKDIR /root
-RUN git clone --recursive --branch backport https://github.com/guilledk/eos.git
+
+RUN git clone --branch backport --recursive https://github.com/guilledk/eos.git
 
 WORKDIR /root/eos
 
+RUN mkdir -p /usr/opt/eosio
 RUN scripts/eosio_build.sh -y -i /usr/opt/eosio -s TLOS
+RUN scripts/eosio_install.sh
+ENV PATH /usr/opt/eosio/bin:$PATH
