@@ -46,3 +46,16 @@ RUN mkdir -p /usr/opt/eosio
 RUN scripts/eosio_build.sh -y -i /usr/opt/eosio -s TLOS
 RUN scripts/eosio_install.sh
 ENV PATH /usr/opt/eosio/bin:$PATH
+
+WORKDIR /root
+RUN rm -rfd /root/eos
+
+RUN wget https://github.com/EOSIO/eosio.cdt/releases/download/v1.7.0/eosio.cdt_1.7.0-1-ubuntu-18.04_amd64.deb
+
+RUN apt-get install -y ./eosio.cdt_1.7.0-1-ubuntu-18.04_amd64.deb
+
+COPY wasm_substitution/ /root/wasm_substitution
+
+WORKDIR /root/wasm_substitution
+RUN cmake .
+RUN make -j2
